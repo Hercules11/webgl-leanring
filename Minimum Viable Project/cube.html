@@ -143,25 +143,29 @@ for webgl-utils, m3, m4, and webgl-lessons-ui.
                     }
                     return m;
                 }
+                // 使用两层循环把rotX, rotY 相乘，得到一个最终的 4x4 矩阵，包含 X 的旋转和 Y 的旋转，最后把矩阵传给 shader, 控制顶点的变换
 
                 let lastTime = 0;
                 function render(time) {
-                    time *= 0.001;
-                    const angleX = time;
-                    const angleY = time * 0.7;
+                    time *= 0.001; // 毫秒 → 秒
+                    const angleX = time; // 1 rad/s
+                    const angleY = time * 0.7; // 0.7 rad/s
 
+                    // 先清空画布，设置白色背景。
                     gl.clearColor(1, 1, 1, 1);
                     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+                    // 把旋转矩阵传给 shader，调用 gl.drawElements 按照索引画三角形。
                     const matrix = getRotationMatrix(angleX, angleY);
                     gl.uniformMatrix4fv(uMatrixLocation, false, matrix);
 
+                    // 每一帧都用新的角度重算矩阵 → 传到 shader → 重新绘制 → 下一帧继续。
                     gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_BYTE, 0);
 
                     requestAnimationFrame(render);
                 }
 
-                render();
+                render(lastTime);
             }
 			main();
 		</script>
